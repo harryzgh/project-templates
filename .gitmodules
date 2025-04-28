@@ -1,3 +1,6 @@
 [submodule "react/next-pages"]
 	path = react/next-pages
 	url = git@github.com:harryzgh/temp-next-pages.git
+[submodule "react/react-ant-design"]
+	path = react/react-ant-design
+	url = git@github.com:harryzgh/temp-react-ant-design.git
