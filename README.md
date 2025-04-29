@@ -50,6 +50,12 @@ git push
 3、**返回主仓库并提交更改** ：
 
 ```
+// 1、进入子仓库提交本地更改 （如进入 next-pages)
+git add .
+git commit -m ''
+git push
+
+// 2、进入主仓库提交主仓库的更改
 cd ..
 cd ..
 git add project-templates/react/next-pages
