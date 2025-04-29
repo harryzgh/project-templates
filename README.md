@@ -58,8 +58,8 @@ git push
 // 2、进入主仓库提交主仓库的更改
 cd ..
 cd ..
-git add project-templates/react/next-pages
-git commit -m "Update submodule"
+git add react/next-pages
+git commit -m "Update next-pages"
 git push
 ```
 
