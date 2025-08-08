@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
+      {/* 首页入口使用服务器组件是为了使用metadata */}
       <DynamicHomePage />
     </>
   )

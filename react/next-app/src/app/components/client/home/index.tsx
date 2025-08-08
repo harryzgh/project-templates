@@ -5,13 +5,13 @@ import { useNum } from "@/store/action/counterAction"
 import { increment, decrement } from "@/store/slices/counterSlice"
 import { useTranslations, useLocale } from "next-intl"
 
+// import TradingViewWidget from "../../kline/TradingViewWidget"
 export default function HomePage() {
   const num = useNum()
   const dispatch = useAppDispatch()
   const router = useRouter()
-  const t = useTranslations()
   const locale = useLocale()
-  // console.log("locale+++++", ${locale}/)
+  const t = useTranslations()
 
   return (
     <main className="h-[200px] border">

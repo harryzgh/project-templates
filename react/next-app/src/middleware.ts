@@ -2,33 +2,32 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import createMiddleware from "next-intl/middleware"
-import { locales, defaultLocale } from "@/locales/i18n/config"
+import { locales, routing } from "@/i18n/routing"
+import { routers } from "./router"
+let count = 0
 
-export default createMiddleware({
-  locales,
-  defaultLocale,
-})
-
-/* async function pathMiddleware(request: NextRequest) {
+/**
+ *
+ * @param request
+ * @returns
+ */
+function pathMiddleware(request: NextRequest, urlLocale: string) {
   const { pathname } = request.nextUrl
-  const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  const [router] = routers.filter(
+    (item) => pathname === `/${urlLocale}${item === "/" ? "" : item}`
   )
-
-  if (pathnameHasLocale) {
-    return NextResponse.next()
-  } else {
-    const [router] = routers.filter((item) => pathname.endsWith(item))
-    request.nextUrl.pathname = `/${defaultLocale}${router ?? ""}`
-    return NextResponse.redirect(
-      new URL(`${defaultLocale}/about`, request.nextUrl.origin),
-      {
-        status: 308,
-      }
-    )
-    // return NextResponse.redirect(request.nextUrl)
+  console.log("test++++++++++++++++++++++22", router, request.url, ++count)
+  if (!router) {
+    const newPathname = `/${urlLocale}${router === "/" ? "" : router ?? ""}`
+    return NextResponse.redirect(new URL(newPathname, request.url))
   }
-} */
+  return null
+}
+
+/**
+ *
+ * @param request
+ */
 function headerMiddleware(request: NextRequest) {
   // const { pathname } = request.nextUrl
   // 克隆请求头并设置一个新的头 `x-hello-from-middleware1`
@@ -50,6 +49,7 @@ function headerMiddleware(request: NextRequest) {
   response.headers.set("x-url", pathname)
   return response */
 }
+
 /**
  * 身份认证
  * @param request
@@ -59,7 +59,7 @@ function authMiddleware(request: NextRequest) {
   if (!request.cookies.get("authToken")) {
     return NextResponse.next()
     // 登录页没写，暂时屏蔽
-    // return NextResponse.redirect(new URL('/login', request.url))
+    // return NextResponse.redirect(new URL("/login", request.url))
   }
   return null
 }
@@ -71,9 +71,10 @@ function authMiddleware(request: NextRequest) {
 function addCustomHeaderMiddleware() {
   const response = NextResponse.next()
   response.headers.set("x-custom-header", "hello-world")
-  console.log(
-    "addCustomHeaderMiddleware++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  )
+  /* console.log(
+    "addCustomHeaderMiddleware++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
+    response
+  ) */
   return response
 }
 /**
@@ -82,29 +83,54 @@ function addCustomHeaderMiddleware() {
  * @returns
  */
 function loggerMiddleware(request: NextRequest) {
-  console.log(`Request: ${request.method} ${request.url}`)
+  /*  console.log(
+    `Request+++++++++++++++++++++++++++++++++++++++: ${new Date().toLocaleString()} ${
+      request.method
+    } ${request.url}`
+  ) */
   return NextResponse.next()
 }
+// 国际化中间件
+const intlMiddleware = createMiddleware(routing)
 
-// 组合中间件
+/**
+ * 需要改变访问路径的，需要return
+ * @param request
+ * @returns
+ */
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const [urlLocale] = locales.filter(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  )
   // 按顺序执行中间件
   // const authResult = authMiddleware(request)
   // if (authResult) return authResult
-  // pathMiddleware(request)
+  // ---------------------------  1、验证路由是否带语言前缀
+  if (!urlLocale) {
+    const response = intlMiddleware(request)
+    // 改变访问路径，需要return
+    return response
+  }
+
+  //  ---------------------------  2、验证带语言前缀的路由是否需要重定向（不匹配项目路由时需要重定向）
+  const pathResponse = pathMiddleware(request, urlLocale)
+  if (pathResponse) {
+    // 改变访问路径，需要return
+    return pathResponse
+  }
   headerMiddleware(request)
   authMiddleware(request)
   loggerMiddleware(request)
-  // request
-  return addCustomHeaderMiddleware()
+  addCustomHeaderMiddleware()
+  return NextResponse.next()
 }
+
 // 配置中间件应用的路径
-/* export const config = {
-  matcher: ['/api/:path*', '/dashboard/:path*'],
-} */
 export const config = {
-  matcher: [
-    // 匹配所有路径，排除以下内容:
-    "/((?!api|_next|_vercel|.*\\..*).*)",
-  ],
+  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  // matcher: [
+  //   // 匹配所有路径，排除以下内容:
+  //   "/((?!api|_next|_vercel|.*\\..*).*)",
+  // ],
 }

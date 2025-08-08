@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
 }
 // createNextIntlPlugin 默认路径是 @/i18n/request.ts
-const withNextIntl = createNextIntlPlugin("./src/locales/i18n/request.ts")
+// "./src/locales/i18n/request.ts"
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts")
 
 export default withNextIntl(nextConfig)

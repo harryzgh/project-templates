@@ -1,6 +1,4 @@
-"use client"
 import { useRouter, usePathname } from "next/navigation"
-
 import { ChangeEvent } from "react"
 
 export default function LanguageSwitcher({
@@ -12,14 +10,10 @@ export default function LanguageSwitcher({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-
   const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newLocale = e.target.value
-    // 保留路径，只替换语言部分
-    /* const newPath = pathname.replace(`/${locale}`, `/${newLocale}`)
-    router.push(newPath) */
     router.replace(
-      // 保留其他路径部分
+      // 保留其他路径部分，只替换语言
       pathname.replace(`/${locale}`, `/${newLocale}`)
     )
   }

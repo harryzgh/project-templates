@@ -1,0 +1,9 @@
+{
+  "hello": "你好",
+  "welcome": "欢迎来到我的网站",
+  "pageAbout": {
+    "welcome": "欢迎来到我的网站",
+    "title": "这是about页的title",
+    "description": "这是about页的description"
+  }
+}
