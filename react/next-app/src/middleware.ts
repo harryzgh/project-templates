@@ -106,7 +106,8 @@ export function middleware(request: NextRequest) {
   // 按顺序执行中间件
   // const authResult = authMiddleware(request)
   // if (authResult) return authResult
-  // ---------------------------  1、验证路由是否带语言前缀
+  // ---------------------------  1、验证路由是否带语言前缀，没有带的话自动带上
+  // 带上判断条件的话，后续切换语言不会执行return response，就不会讲语言缓存到cookie里
   if (!urlLocale) {
     const response = intlMiddleware(request)
     // 改变访问路径，需要return
